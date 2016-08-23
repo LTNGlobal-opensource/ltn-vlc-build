@@ -67,7 +67,7 @@ cd ../../
 
 # Build VLC itself
 ./bootstrap
-./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --enable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --enable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
+./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --enable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
 make -j8
 
 # Install to a temporary directory and remove a bunch of unneeded stuff
