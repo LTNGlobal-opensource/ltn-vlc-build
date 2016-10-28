@@ -57,7 +57,7 @@ cd contrib/centos
 # and hence whether vpx and lame get included as implicit dependencies.  Hence,
 # they need to be explicitly present despite being followed by --disable-all.
 
-../bootstrap --disable-sout --disable-disc --disable-all --enable-a52 --enable-dca --enable-dvbpsi --enable-faad2 --enable-ffmpeg --enable-gettext --enable-gsm --enable-libxml2 --enable-mad --enable-openjpeg --enable-opus --enable-png --enable-samplerate --enable-zlib
+../bootstrap --disable-sout --disable-disc --disable-all --enable-dca --enable-dvbpsi --enable-faad2 --enable-ffmpeg --enable-gettext --enable-gsm --enable-libxml2 --enable-mad --enable-openjpeg --enable-opus --enable-png --enable-samplerate --enable-zlib
 
 # Build the deps
 echo EXTRA_CFLAGS := -fPIC >> config.mak
@@ -67,7 +67,7 @@ cd ../../
 
 # Build VLC itself
 ./bootstrap
-./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --enable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
+./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --disable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
 make -j8
 
 # Install to a temporary directory and remove a bunch of unneeded stuff
