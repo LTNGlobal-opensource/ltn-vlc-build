@@ -4,7 +4,7 @@
 set -e
 
 GITREPO=https://github.com/LTNGlobal-opensource/vlc-sdi.git
-GITBRANCH=ltn
+GITBRANCH=ltn-scte-35
 BLACKMAGIC_ZIP=Blackmagic_DeckLink_SDK_10.1.zip
 BLACKMAGIC_SHA512=db4f0c0432839b33f1a12788ebab8e5d106edb91c35a9d8754d9199e85c6cf74d1e1aeaf4ba9328b3c7fd71a4574b9f5cff4a7688aa9ceb438b4d7f1a3495c17
 
@@ -14,6 +14,13 @@ if [ ! -d blackmagic_sdk ]; then
     unzip -oq $BLACKMAGIC_ZIP
     ln -Tfs ./Blackmagic\ DeckLink\ SDK\ 10.1/Linux blackmagic_sdk
 fi
+
+BITSTREAM_REPO=https://code.videolan.org/videolan/bitstream.git
+BITSTREAM_BRANCH=ce288cb355843d4252f52f4e0a07528d04b8bd2a
+KLVANC_REPO=https://github.com/stoth68000/libklvanc.git
+KLVANC_BRANCH=
+KLSCTE35_REPO=https://github.com/stoth68000/libklscte35.git
+KLSCTE35_BRANCH=
 
 # 1) SOURCE CODE
 # Exact reproducibility guaranteed by git SHA1 hash
@@ -48,8 +55,10 @@ cd ../..
 # them (since they may disappear from the Internet at some pont)
 cp ../contrib-tarballs/* contrib/tarballs
 
-mkdir -p contrib/centos
-cd contrib/centos
+CONTRIBDIR=`pwd`/contrib/centos
+CONTRIB_BUILDROOT=`pwd`/contrib/`cc -dumpmachine`
+mkdir -p $CONTRIBDIR
+cd $CONTRIBDIR
 
 # While it may seem redundant to include "--disable-sout" and "--disable-disc"
 # when immediately followed by "--disable-all", those two are special cases
@@ -63,9 +72,50 @@ cd contrib/centos
 echo EXTRA_CFLAGS := -fPIC >> config.mak
 make -j8
 
-cd ../../
+cd ../../../
+
+# Build Kernel Labs dependencies
+if [ ! -d bitstream ]; then
+	git clone $BITSTREAM_REPO bitstream
+	cd bitstream
+	if [ "$BITSTREAM_BRANCH" != "" ]; then
+	    echo "Switching to branch [$BITSTREAM_BRANCH]..."
+	    git checkout $BITSTREAM_BRANCH
+	fi
+	PREFIX=${CONTRIB_BUILDROOT} make install
+	cd ..
+fi
+
+if [ ! -d libklvanc ]; then
+	git clone $KLVANC_REPO libklvanc
+	cd libklvanc
+	if [ "$KLVANC_BRANCH" != "" ]; then
+	    echo "Switching to branch [$KLVANC_BRANCH]..."
+	    git checkout $KLVANC_BRANCH
+	fi
+	./autogen.sh --build
+	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared
+	make
+	make install prefix=${CONTRIB_BUILDROOT}
+	cd ..
+fi
+
+if [ ! -d libklscte35 ]; then
+	git clone $KLSCTE35_REPO libklscte35
+	cd libklscte35
+	if [ "$KLSCTE35_BRANCH" != "" ]; then
+	    echo "Switching to branch [$KLSCTE35_BRANCH]..."
+	    git checkout $KLSCTE35_BRANCH
+	fi
+	./autogen.sh --build
+	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared
+	make
+	make install prefix=${CONTRIB_BUILDROOT}
+	cd ..
+fi
 
 # Build VLC itself
+cd vlc
 ./bootstrap
 ./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --disable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
 make -j8
