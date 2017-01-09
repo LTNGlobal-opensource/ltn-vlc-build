@@ -133,4 +133,4 @@ find lib -name \*.la -exec rm -f {} \;
 cd ..
 
 # Create the final tarball
-tar c usr | bzip2 > ../../vlc.tar.bz2
+tar czf ../../vlc.tar.gz usr
