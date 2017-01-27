@@ -15,8 +15,6 @@ if [ ! -d blackmagic_sdk ]; then
     ln -Tfs ./Blackmagic\ DeckLink\ SDK\ 10.1/Linux blackmagic_sdk
 fi
 
-BITSTREAM_REPO=https://code.videolan.org/videolan/bitstream.git
-BITSTREAM_BRANCH=ce288cb355843d4252f52f4e0a07528d04b8bd2a
 KLVANC_REPO=https://github.com/stoth68000/libklvanc.git
 KLVANC_BRANCH=
 KLSCTE35_REPO=https://github.com/stoth68000/libklscte35.git
@@ -75,17 +73,6 @@ make -j8
 cd ../../../
 
 # Build Kernel Labs dependencies
-if [ ! -d bitstream ]; then
-	git clone $BITSTREAM_REPO bitstream
-	cd bitstream
-	if [ "$BITSTREAM_BRANCH" != "" ]; then
-	    echo "Switching to branch [$BITSTREAM_BRANCH]..."
-	    git checkout $BITSTREAM_BRANCH
-	fi
-	PREFIX=${CONTRIB_BUILDROOT} make install
-	cd ..
-fi
-
 if [ ! -d libklvanc ]; then
 	git clone $KLVANC_REPO libklvanc
 	cd libklvanc
