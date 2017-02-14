@@ -15,9 +15,9 @@ if [ ! -d blackmagic_sdk ]; then
     ln -Tfs ./Blackmagic\ DeckLink\ SDK\ 10.1/Linux blackmagic_sdk
 fi
 
-KLVANC_REPO=https://github.com/stoth68000/libklvanc.git
+KLVANC_REPO=https://github.com/LTNGlobal-opensource/libklvanc.git
 KLVANC_BRANCH=
-KLSCTE35_REPO=https://github.com/dheitmueller/libklscte35.git
+KLSCTE35_REPO=https://github.com/LTNGlobal-opensource/libklscte35.git
 KLSCTE35_BRANCH=
 
 # 1) SOURCE CODE
