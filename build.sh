@@ -81,9 +81,9 @@ if [ ! -d libklvanc ]; then
 	    git checkout $KLVANC_BRANCH
 	fi
 	./autogen.sh --build
-	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared
+	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared --prefix=${CONTRIB_BUILDROOT}
 	make
-	make install prefix=${CONTRIB_BUILDROOT}
+	make install
 	cd ..
 fi
 
@@ -95,9 +95,9 @@ if [ ! -d libklscte35 ]; then
 	    git checkout $KLSCTE35_BRANCH
 	fi
 	./autogen.sh --build
-	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared
+	CPPFLAGS=-I${CONTRIB_BUILDROOT}/include LDFLAGS=-L${CONTRIB_BUILDROOT}/lib ./configure --disable-shared --prefix=${CONTRIB_BUILDROOT}
 	make
-	make install prefix=${CONTRIB_BUILDROOT}
+	make install
 	cd ..
 fi
 
