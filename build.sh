@@ -4,7 +4,7 @@
 set -e
 
 GITREPO=https://github.com/LTNGlobal-opensource/vlc-sdi.git
-GITBRANCH=vid.vlc.1.1.1
+GITBRANCH=vid.vlc.1.1.2
 BLACKMAGIC_ZIP=Blackmagic_DeckLink_SDK_10.1.zip
 BLACKMAGIC_SHA512=db4f0c0432839b33f1a12788ebab8e5d106edb91c35a9d8754d9199e85c6cf74d1e1aeaf4ba9328b3c7fd71a4574b9f5cff4a7688aa9ceb438b4d7f1a3495c17
 
@@ -16,9 +16,9 @@ if [ ! -d blackmagic_sdk ]; then
 fi
 
 KLVANC_REPO=https://github.com/LTNGlobal-opensource/libklvanc.git
-KLVANC_BRANCH=
+KLVANC_BRANCH=vid.obe.1.1.2
 KLSCTE35_REPO=https://github.com/LTNGlobal-opensource/libklscte35.git
-KLSCTE35_BRANCH=
+KLSCTE35_BRANCH=vid.obe.1.1.2
 
 # 1) SOURCE CODE
 # Exact reproducibility guaranteed by git SHA1 hash
