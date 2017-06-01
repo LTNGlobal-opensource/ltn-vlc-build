@@ -16,7 +16,7 @@ if [ ! -d blackmagic_sdk ]; then
 fi
 
 KLVANC_REPO=https://github.com/LTNGlobal-opensource/libklvanc.git
-KLVANC_BRANCH=vid.obe.1.1.2
+KLVANC_BRANCH=vid.obe.1.1.5
 KLSCTE35_REPO=https://github.com/LTNGlobal-opensource/libklscte35.git
 KLSCTE35_BRANCH=vid.obe.1.1.2
 
