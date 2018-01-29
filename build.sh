@@ -5,20 +5,23 @@ set -e
 
 GITREPO=https://github.com/LTNGlobal-opensource/vlc-sdi.git
 GITBRANCH=vid.vlc.1.1.6
-BLACKMAGIC_ZIP=Blackmagic_DeckLink_SDK_10.1.zip
-BLACKMAGIC_SHA512=db4f0c0432839b33f1a12788ebab8e5d106edb91c35a9d8754d9199e85c6cf74d1e1aeaf4ba9328b3c7fd71a4574b9f5cff4a7688aa9ceb438b4d7f1a3495c17
-
-# Setup the BlackMagic SDK
-if [ ! -d blackmagic_sdk ]; then
-    echo "$BLACKMAGIC_SHA512  $BLACKMAGIC_ZIP" | sha512sum --check - || exit 1
-    unzip -oq $BLACKMAGIC_ZIP
-    ln -Tfs ./Blackmagic\ DeckLink\ SDK\ 10.1/Linux blackmagic_sdk
-fi
-
 KLVANC_REPO=https://github.com/LTNGlobal-opensource/libklvanc.git
 KLVANC_BRANCH=vid.obe.1.1.5
 KLSCTE35_REPO=https://github.com/LTNGlobal-opensource/libklscte35.git
 KLSCTE35_BRANCH=vid.obe.1.1.2
+BMSDK_REPO=https://github.com/LTNGlobal-opensource/bmsdk.git
+
+# Make available the BlackMagic SDK
+if [ ! -d bmsdk ]; then
+    git clone $BMSDK_REPO
+fi
+if [ `uname -s` = "Darwin" ]; then
+    PLAT=Mac
+else
+    PLAT=Linux
+fi
+BMSDK_10_8_5=$PWD/bmsdk/10.8.5/$PLAT
+BMSDK_10_1_1=$PWD/bmsdk/10.1.1/$PLAT
 
 # 1) SOURCE CODE
 # Exact reproducibility guaranteed by git SHA1 hash
@@ -101,23 +104,39 @@ if [ ! -d libklscte35 ]; then
 	cd ..
 fi
 
-# Build VLC itself
-cd vlc
-./bootstrap
-./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --disable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=`cd ../blackmagic_sdk && pwd` --prefix=/usr
-make -j8
+build_vlc() {
+    GITVER=`echo $1 | sed 's/^vid.vlc.//'`
+    BMSDK_DIR=$2
+    BMVERSION=`cat $BMSDK_DIR/include/DeckLinkAPIVersion.h | grep BLACKMAGIC_DECKLINK_API_VERSION_STRING | awk '{print $3}'|sed -e 's/^"//' -e 's/"$//'`
 
-# Install to a temporary directory and remove a bunch of unneeded stuff
-mkdir -p inst
-make DESTDIR=$PWD/inst install
-cd inst
-cd usr
-rm -fr include share
-rm -f bin/rvlc bin/cvlc bin/vlc-wrapper
-rm -fr lib/pkgconfig
-rm -f lib/vlc/libcompat.a lib/vlc/vlc-cache-gen
-find lib -name \*.la -exec rm -f {} \;
-cd ..
+    echo "Building VLC $GITVER for BlackMagic SDK version $BMVERSION"
 
-# Create the final tarball
-tar czf ../../vlc.tar.gz usr
+    cd vlc
+    ./bootstrap
+    ./configure --disable-nls --disable-xcb --disable-xvideo --disable-glx --disable-alsa --disable-sdl --disable-dbus --disable-lua --disable-mad --disable-a52 --disable-libgcrypt --disable-chromaprint --disable-qt --disable-skins2  --disable-live555  --disable-libva --disable-freetype --with-decklink-sdk=$BMSDK_DIR --prefix=/usr
+
+    make clean
+    make -j8
+
+    # Install to a temporary directory which we can tar up
+    rm -rf inst
+    mkdir -p inst
+    make DESTDIR=$PWD/inst install
+    cd inst
+    cd usr
+    rm -fr include share
+    rm -f bin/rvlc bin/cvlc bin/vlc-wrapper
+    rm -fr lib/pkgconfig
+    rm -f lib/vlc/libcompat.a lib/vlc/vlc-cache-gen
+    find lib -name \*.la -exec rm -f {} \;
+    cd ..
+
+    # Create the final tarball
+    tar czf ../../vlc-$GITVER-bm$BMVERSION.tar.gz usr
+
+    cd ../..
+}
+
+# Build ffmpeg itself
+build_vlc $GITBRANCH $BMSDK_10_8_5
+build_vlc $GITBRANCH $BMSDK_10_1_1
