@@ -4,7 +4,7 @@
 set -e
 
 GITREPO=https://github.com/LTNGlobal-opensource/vlc-sdi.git
-GITBRANCH=vid.vlc.1.1.6
+GITBRANCH=vid.vlc.1.1.7
 KLVANC_REPO=https://github.com/LTNGlobal-opensource/libklvanc.git
 KLVANC_BRANCH=vid.obe.1.1.5
 KLSCTE35_REPO=https://github.com/LTNGlobal-opensource/libklscte35.git
